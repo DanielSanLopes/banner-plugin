@@ -1,8 +1,5 @@
 
-export async function GET(request?: Request) {
-  if (!request) {
-    return new Response("Invalid request", { status: 400 });
-  }
+export async function GET(request: Request, ctx: RouteContext<'/api/banners'>) {
 
   const { searchParams } = new URL(request.url);
 
@@ -12,12 +9,7 @@ export async function GET(request?: Request) {
   let res = new Response("<head><img style='width: 100%; height: fit-content;' src='https://static.vecteezy.com/system/resources/previews/004/708/478/non_2x/purple-banner-design-modern-banner-template-design-with-purple-color-banner-for-social-media-cover-website-and-much-more-vector.jpg'/></head>")
   
   res.headers.set('Content-Type', 'text/html')
-
-
-  
-
-  return res
-
+  return res;
   // return NextResponse.json({
   //   siteUrl
   // });
