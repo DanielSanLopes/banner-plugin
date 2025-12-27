@@ -1,5 +1,9 @@
 
-export async function GET(request: Request) {
+export async function GET(request?: Request) {
+  if (!request) {
+    return new Response("Invalid request", { status: 400 });
+  }
+
   const { searchParams } = new URL(request.url);
 
   const siteUrl = searchParams.get("url");
