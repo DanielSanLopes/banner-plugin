@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function getting(request: NextRequest) {
+export async function getting(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const siteUrl = searchParams.get("url");
