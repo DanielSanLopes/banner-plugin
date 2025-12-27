@@ -7,7 +7,8 @@ export async function GET(request: NextRequest) {
   console.log(siteUrl);
 
   let res = new NextResponse("<head><img style='width: 100%; height: fit-content;' src='https://static.vecteezy.com/system/resources/previews/004/708/478/non_2x/purple-banner-design-modern-banner-template-design-with-purple-color-banner-for-social-media-cover-website-and-much-more-vector.jpg'/></head>")
-  .headers.set('Content-Type', 'text/html')
+  
+  res.headers.set('Content-Type', 'text/html')
 
 
   
