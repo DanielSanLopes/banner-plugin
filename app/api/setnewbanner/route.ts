@@ -33,9 +33,9 @@ export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewb
 
     let fileName = `${crypto.randomUUID()}-${imgFile.name}`;
 
-   const {error} = await supabase.storage.from('banner-plugin').upload(fileName, imgFile, {contentType: imgFile.type})
-    if (error) {
-        console.error('Erro ao fazer upload da imagem:', error);
+   const result = await supabase.storage.from('banner-plugin').upload(fileName, imgFile, {contentType: imgFile.type})
+    if (result.error) {
+        console.error('Erro ao fazer upload da imagem:', result.error);
         errorMessage = 'Erro ao fazer upload da imagem. Tente novamente mais tarde';
         errorCode = 500;
     }
