@@ -97,9 +97,9 @@ export async function getBannerURL(pageURL: string) {
 
     let tooEarly = new Date().getTime() < new Date(bannerData.schedule).getTime();
     let tooLate = (new Date().getTime() > new Date(bannerData.duration).getTime()) 
-    && (bannerData.schedule !== bannerData.duration) && bannerData.duration != null;
+    && (bannerData.schedule !== bannerData.duration);
 
-    if (tooEarly || tooLate) {
+    if ((tooEarly || tooLate) && bannerData.schedule !== null && bannerData.duration !== null) {
         response.message = 'O banner está fora do período de exibição';
         response.code = 200;
         response.error = false;

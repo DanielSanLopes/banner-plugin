@@ -14,13 +14,6 @@ export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewb
     let timezone = formData.get("timezone") as string;
 
 
-    console.log("duration", duration)
-
-    schedule = !schedule ? new Date().toString() : schedule;
-    duration = !duration ? new Date().toString() : duration;
-
-    console.log("duration", duration)
-
     let digit = timezone.length > 2 ? '' : '0';
     timezone = `${timezone[0]}${digit}${timezone[1]}:00`
 
