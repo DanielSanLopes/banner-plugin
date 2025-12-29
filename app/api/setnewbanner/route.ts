@@ -69,11 +69,13 @@ export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewb
         duration: new Date(new Date(schedule + timezone).getTime() + durationTimestamp)
     })
 
-    const resultDatabase = await supabase.from('banner-post').insert({
+    const resultDatabase = await supabase.from('banner-post').upsert({
         idURL: pageURL,
         imgURL: siteUrl,
         schedule:  new Date(new Date(schedule + timezone).getTime() + durationTimestamp),
         duration: new Date(new Date(schedule + timezone).getTime() + durationTimestamp)
+    },{
+        onConflict: 'idURL'
     });
 
     if (resultDatabase.error) {
