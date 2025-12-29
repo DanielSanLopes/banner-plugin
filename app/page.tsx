@@ -18,6 +18,10 @@ export default function Home() {
           method="post" 
           encType="multipart/form-data" 
           className="flex flex-col gap-4">
+          <input type="text" className="hidden" name="timezone" id="timezone" />
+          <script>
+            document.getElementById('timezone').value = (new Date().getTimezoneOffset()/-60).toString();
+          </script>
 
           <label>
             Upload de imagens png, jpg, jpeg ou webp:
@@ -50,17 +54,43 @@ export default function Home() {
             &nbsp;
             <input 
               type="checkbox" 
-              name="scheduleChange" 
+              name="hasSchedule" 
               className="bg-gray-100 dark:bg-gray-800 peer" 
-              id="hasBanner"/>
+              id="hasSchedule"/>
             <br />
             <input 
               type="datetime-local" 
-              name="scheduledTime" 
+              name="schedule" 
               className="hidden peer-checked:block bg-[#fcfcfc] dark:bg-[#333333] text-[#ffffff]" />
+              <br />
+              <div className="hidden peer-checked:block">
+                <label>
+                Definir duração?
+                &nbsp;
+                &nbsp;
+                <input 
+                  type="checkbox" 
+                  name="hasDuration" 
+                  className=" bg-gray-100 dark:bg-gray-800 peer" 
+                  id="hasDuration"/>
+                  <br />
+  
+                <div className="hidden peer-checked:block">
+                  Duração (em dias):
+                </div>
+                <input 
+                type="number" 
+                name="duration" 
+                className="hidden peer-checked:block bg-[#fcfcfc] dark:bg-[#333333] text-[#ffffff]" />
+                </label>
+              </div>
+
           </label>
+          <br />
+          <input type="submit" value="Enviar" className="bg-blue-500 text-white py-2 px-4 rounded" />
         </form>
       </main>
+      
     </div>
   );
 }
