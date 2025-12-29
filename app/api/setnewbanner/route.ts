@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from '@supabase/supabase-js'
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  throw new Error('Variáveis do Supabase não definidas no .env')
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+import {setNewBanner} from '../../services/supabase'
 
 
 export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewbanner'>) {
@@ -17,20 +8,32 @@ export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewb
 
     const formData = await request.formData();
     const imgFile = formData.get("bannerImage") as File;
-    const pageURL = formData.get("pageURL") as string;
-    const duration = formData.get("duration") as string;
-    const schedule = formData.get("schedule") as string;
+    let pageURL = formData.get("pageURL") as string;
+    let duration = formData.get("duration") as string;
+    let schedule = formData.get("schedule") as string;
     let timezone = formData.get("timezone") as string;
+
+
+    console.log("duration", duration)
+
+    schedule = !schedule ? new Date().toString() : schedule;
+    duration = !duration ? new Date().toString() : duration;
+
+    console.log("duration", duration)
 
     let digit = timezone.length > 2 ? '' : '0';
     timezone = `${timezone[0]}${digit}${timezone[1]}:00`
 
-    console.log('Form Data:', { pageURL, duration, schedule, timezone });
-    console.log(schedule)
-    console.log(schedule + timezone)
-    console.log(new Date(schedule + timezone).getTime());
+    // console.log('Form Data:', { pageURL, duration, schedule, timezone });
+    // console.log(schedule)
+    // console.log(schedule + timezone)
+    // console.log(new Date(schedule + timezone).getTime());
 
+    if (pageURL.at(-1) !== '/') {
+        pageURL += '/';
+    }
 
+    pageURL = encodeURIComponent(pageURL);
 
     if (!imgFile){
         errorCode = 400;
@@ -45,49 +48,69 @@ export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewb
         errorMessage = 'Tipo de arquivo inválido';
     }
 
-    let fileName = `${crypto.randomUUID()}-${imgFile.name}`;
-
-   const resultStorage = await supabase.storage.from('banner-plugin').upload(fileName, imgFile, {contentType: imgFile.type})
-    if (resultStorage.error) {
-        console.error('Erro ao fazer upload da imagem:', resultStorage.error);
-        errorMessage = 'Erro ao fazer upload da imagem. Tente novamente mais tarde';
-        errorCode = 500;
+    const newBannerData = {
+        pageURL,
+        imgFile,
+        schedule,
+        duration,
+        timezone,
+        errorMessage,
+        errorCode
     }
 
-    console.log('fullPath:', resultStorage.data?.fullPath);
-    const siteUrl = `${supabaseUrl}/storage/v1/object/public/banner-plugin/${fileName}`;
-    console.log('siteUrl:', siteUrl);
+    const result = await setNewBanner(newBannerData);
 
-    const durationTimestamp = duration? Number.parseInt(duration) * 24 * 60 * 60 * 1000 : 0;
+    if (result?.errorCode) {
+        errorCode = result.errorCode;
+        errorMessage = result.errorMessage;
+    }
+
+//#region services
+
+// let fileName = `${crypto.randomUUID()}-${imgFile.name}`;
+
+// const imgURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/banner-plugin/${fileName}`;
+
+//    const resultStorage = await supabase.storage.from('banner-plugin').upload(fileName, imgFile, {contentType: imgFile.type})
+//     if (resultStorage.error) {
+//         console.error('Erro ao fazer upload da imagem:', resultStorage.error);
+//         errorMessage = 'Erro ao fazer upload da imagem. Tente novamente mais tarde';
+//         errorCode = 500;
+//     }
+
+    // console.log('fullPath:', resultStorage.data?.fullPath);
+    // const imgURL = `${supabaseUrl}/storage/v1/object/public/banner-plugin/${fileName}`;
+    // console.log('imgURL:', imgURL);
+
+    // const durationTimestamp = duration? Number.parseInt(duration) * 24 * 60 * 60 * 1000 : 0;
 
     // console.log(new Date(new Date(schedule + timezone).getTime() + durationTimestamp), "oooii");
 
-    console.log({
-        idURL: pageURL,
-        imgURL: siteUrl,
-        schedule:  new Date(new Date(schedule + timezone).getTime()),
-        duration: new Date(new Date(schedule + timezone).getTime() + durationTimestamp)
-    })
+    // console.log({
+    //     idURL: pageURL,
+    //     imgURL: imgURL,
+    //     schedule:  new Date(new Date(schedule + timezone).getTime()),
+    //     duration: new Date(new Date(schedule + timezone).getTime() + durationTimestamp)
+    // })
 
-    const resultDatabase = await supabase.from('banner-post').upsert({
-        idURL: pageURL,
-        imgURL: siteUrl,
-        schedule:  new Date(new Date(schedule + timezone).getTime() + durationTimestamp),
-        duration: new Date(new Date(schedule + timezone).getTime() + durationTimestamp)
-    },{
-        onConflict: 'idURL'
-    });
+    // const resultDatabase = await supabase.from('banner-post').upsert({
+    //     idURL: pageURL,
+    //     imgURL: imgURL,
+    //     schedule:  new Date(new Date(schedule + timezone).getTime() + durationTimestamp),
+    //     duration: new Date(new Date(schedule + timezone).getTime() + durationTimestamp)
+    // },{
+    //     onConflict: 'idURL'
+    // });
 
-    if (resultDatabase.error) {
-        console.error('Erro ao inserir no banco de dados:', resultDatabase.error);
-        errorMessage = 'Erro ao salvar dados. Tente novamente mais tarde';
-        errorCode = 500;
-    }
+    // if (resultDatabase.error) {
+    //     console.error('Erro ao inserir no banco de dados:', resultDatabase.error);
+    //     errorMessage = 'Erro ao salvar dados. Tente novamente mais tarde';
+    //     errorCode = 500;
+    // }
 
-    console.log(resultDatabase.data)
-
-
-    
+    // console.log(resultDatabase.data)
+//#endregion
+ 
     if (errorCode) {
             const page = `<div className='flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black'>
                     <main className='flex min-h-screen w-full max-w-3xl flex-col items-center justify-content gap-3 py-32 px-16 bg-white dark:bg-black sm:items-start'>
@@ -105,21 +128,10 @@ export async function POST(request: NextRequest, ctx: RouteContext<'/api/setnewb
         return response;
     }
 
-
-    
-
-   let res = new NextResponse("Deu Certo!")
-
+    let res = new NextResponse("Deu Certo!")
     res.headers.set('Content-Type', 'text/html')
     return res;
-
-    // let res = new NextResponse("<head><img style='width: 100%; height: fit-content;' src='https://static.vecteezy.com/system/resources/previews/004/708/478/non_2x/purple-banner-design-modern-banner-template-design-with-purple-color-banner-for-social-media-cover-website-and-much-more-vector.jpg'/></head>")
-
-    // res.headers.set('Content-Type', 'text/html')
-    // return res;
-    // return NextResponse.json({
-    //   siteUrl
-    // });
 }
+
 
 

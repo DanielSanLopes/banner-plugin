@@ -1,17 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getBannerURL } from "@/app/services/supabase";
+import { headers } from "next/headers";
+
 
 export async function GET(request: NextRequest, ctx: RouteContext<'/api/banners'>) {
 
   const { searchParams } = new URL(request.url);
+  const siteUrl = encodeURIComponent(searchParams.get("url")!);
+  console.log ("siteURL", siteUrl)
 
-  const siteUrl = searchParams.get("url");
-  console.log(siteUrl);
+  const result = await getBannerURL(siteUrl)!;
 
-  let res = new NextResponse("<head><img style='width: 100%; height: fit-content;' src='https://static.vecteezy.com/system/resources/previews/004/708/478/non_2x/purple-banner-design-modern-banner-template-design-with-purple-color-banner-for-social-media-cover-website-and-much-more-vector.jpg'/></head>")
+  console.log("Banner result:", result.error);
+
+  /////////////////////////////////////////////////////
+  let res = new NextResponse(result.imgURL, {
+    status: result.code!,
+    statusText: result.message!,
+    headers:{
+      'X-Error-Code': result.error? result.code as any : null,
+
+      'X-Message': result.code === 204? 
+      `You are probably trying to get the banner before or after 
+      the period you have stipulated. Please re-upload the banner 
+      with a new schedule (or none at all).` : 
+      result.message!,
+
+      'Access-Control-Allow-Origin': '*'
+    }
+  })
+  ////////////////////////////////////////////////////
   
-  res.headers.set('Content-Type', 'text/html')
-  return res;
-  // return NextResponse.json({
-  //   siteUrl
-  // });
-}
+  return res
+} 

@@ -1,9 +1,0 @@
-{
-  "https://localhost:3000": {
-	"img": "https://localhost:3000/logo.png",
-	"scheduleTimestamp": 1234567890,
-    "durationTimestamp": 1234567890,
-	"url": "https://localhost:3000"
-  }
-}
-
