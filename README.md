@@ -34,4 +34,4 @@ https://github.com/user-attachments/assets/25a68658-9132-4f84-9a78-265b97df0334
 * Next (React ⚛️ + TS 🟦)
 * Supabase (storage and database - Postgres 🐘)
   
-<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
