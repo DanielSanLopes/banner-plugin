@@ -29,6 +29,7 @@ export default function RootLayout({
       >
         {children}
       </body>
+      {/* <script src="https://banner-plugin.vercel.app/magic-banner.js"></script> */}
     </html>
   );
 }
