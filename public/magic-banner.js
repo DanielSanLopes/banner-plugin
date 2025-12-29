@@ -18,7 +18,7 @@ async function getBanner (){
 
     const banner = 
     `<section class="magic-banner">
-        <img src="${imgSource}" alt="Logo">
+        <img style="width: 100%; height: fit-content;" src="${imgSource}" alt="Logo">
     </section>`;
 
     document.body.insertAdjacentHTML("afterbegin", banner)
