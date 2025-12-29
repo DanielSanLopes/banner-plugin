@@ -18,14 +18,7 @@ export async function GET(request: NextRequest, ctx: RouteContext<'/api/banners'
     status: result.code!,
     statusText: result.message!,
     headers:{
-      'X-Error-Code': result.error? result.code as any : null,
-
-      'X-Message': result.code === 204? 
-      `You are probably trying to get the banner before or after 
-      the period you have stipulated. Please re-upload the banner 
-      with a new schedule (or none at all).` : 
-      result.message!,
-
+      'X-Error-Code': result.error? result.code as any : null,  
       'Access-Control-Allow-Origin': '*'
     }
   })
